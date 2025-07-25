@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+const fetch = require('node-fetch').default;
 const { Client } = require('pg');
 
 const P1_METER_URL = process.env.P1_METER_URL || 'http://10.13.13.2/api/v1/data';
