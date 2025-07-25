@@ -1,0 +1,57 @@
+services:
+  wireguard:
+    image: linuxserver/wireguard
+    container_name: wireguard
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Amsterdam
+      - SERVERURL=${WIREGUARD_SERVERURL:-0.0.0.0} # IP or DNS name of the host server
+      - SERVERPORT=51820
+      - PEERS=1
+      - PEERDNS=auto
+      - INTERNAL_SUBNET=10.13.13.0
+    volumes:
+      - ./wireguard:/config
+      - /lib/modules:/lib/modules
+    ports:
+      - "51820:51820/udp"
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    restart: unless-stopped
+
+  timescaledb:
+    image: timescale/timescaledb:latest-pg14
+    container_name: timescaledb
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-p1meter}
+    ports:
+      - "5432:5432"
+    volumes:
+      - timescaledb_data:/var/lib/postgresql/data
+      - ./timescaledb/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    restart: unless-stopped
+
+  bridge:
+    build: ./bridge
+    container_name: bridge
+    environment:
+      - P1_METER_URL=http://10.13.13.2/api/v1/data
+      - POLL_INTERVAL=5000
+      - PGHOST=timescaledb
+      - PGUSER=${POSTGRES_USER:-postgres}
+      - PGPASSWORD=${POSTGRES_PASSWORD:-password}
+      - PGDATABASE=${POSTGRES_DB:-p1meter}
+    depends_on:
+      - timescaledb
+      - wireguard
+    network_mode: "service:wireguard"
+    restart: unless-stopped
+
+volumes:
+  timescaledb_data:
