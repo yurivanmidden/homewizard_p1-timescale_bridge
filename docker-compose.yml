@@ -41,8 +41,8 @@ services:
     build: ./bridge
     container_name: bridge
     environment:
-      - P1_METER_URL=http://10.13.13.2/api/v1/data
-      - POLL_INTERVAL=5000
+      - P1_METER_URL=${P1_METER_URL:-'http://10.13.13.2/api/v1/data'}
+      - POLL_INTERVAL=${POLL_INTERVAL:-5000}
       - PGHOST=timescaledb
       - PGUSER=${POSTGRES_USER:-postgres}
       - PGPASSWORD=${POSTGRES_PASSWORD:-password}
