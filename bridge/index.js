@@ -9,7 +9,7 @@ const pgClient = new Client({
   host: process.env.PGHOST || 'timescaledb',
   database: process.env.PGDATABASE || 'p1meter',
   password: process.env.PGPASSWORD || 'yourpassword',
-  port: 5432,
+  port: 5432
 });
 
 async function pollAndStore() {
@@ -49,7 +49,7 @@ async function pollAndStore() {
         active_current_l1_a,
         active_current_l2_a,
         active_current_l3_a,
-        active_frequency_hz,
+        active_frequency_hz
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
       [
         timestamp, 
