@@ -30,8 +30,8 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
       POSTGRES_DB: ${POSTGRES_DB:-p1meter}
-    ports:
-      - "5432:5432"
+    expose:
+      - "5432"
     volumes:
       - timescaledb_data:/var/lib/postgresql/data
       - ./timescaledb/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
